@@ -324,7 +324,9 @@ void SkeletonHelper::update(float dt)
 	if (pose) {
 		mesh->clear();
 
+		vec3 color_xyz(color.x, color.y, color.z);
 		// ..
+		//dot()
 
 		mesh->upload_to_vram();
 	}

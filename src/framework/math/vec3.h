@@ -34,6 +34,7 @@ vec3 operator/(const vec3& l, float f);
 
 // The dot product is used to measure how similar two vectors are
 float dot(const vec3& l, const vec3& r);
+float sum(const vec3& v);
 
 /*
 Finding the length of a vector involves a square root operation, which should
