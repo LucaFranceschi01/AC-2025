@@ -324,8 +324,10 @@ void SkeletonHelper::update(float dt)
 	if (pose) {
 		mesh->clear();
 
+		vec3 color_xyz(color.x, color.y, color.z);
 		// TODO: TASK1 Set the vertices of the mesh (lines between joints) using the global positions of the pose.
-		
+				//dot()
+
 		//...
 		mesh->upload_to_vram();
 	}

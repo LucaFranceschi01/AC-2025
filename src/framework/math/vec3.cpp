@@ -43,10 +43,12 @@ vec3 operator/(const vec3& l, float f)
 // Used to measure how similar two vectors are
 float dot(const vec3& l, const vec3& r)
 {
-	// TODO
-	// ..
+	return sum(l * r);
+}
 
-	return 0.f;
+float sum(const vec3& v)
+{
+	return v.x + v.y + v.z;
 }
 
 // Sometimes the length can be usefull in square space to avoid doing the square root operation
@@ -132,10 +134,9 @@ vec3 reflect(const vec3& a, const vec3& b)
 // Returns a vector that is perpendicular to both input vectors
 vec3 cross(const vec3& l, const vec3& r)
 {
-	// TODO
-	// ..
-
-	return vec3();
+	return vec3(l.y * r.z - l.z * r.y,
+		l.z * r.x - l.x * r.z,
+		l.x * r.y - l.y * r.x);
 }
 
 /*
