@@ -52,6 +52,8 @@ public:
 	void set_model(const mat4& m);
 	void set_transform(const Transform& t);
 	void set_children(std::vector<Entity*> children);
+
+	void set_color(const vec3& color);
 };
 
 class LineHelper : public Entity
