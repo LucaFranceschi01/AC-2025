@@ -53,8 +53,37 @@ void Entity::update(float dt)
 {
 	if (children.size() > 0) {
 		for (unsigned int i = 0; i < children.size(); i++) {
-			children[i]->update(dt);			
+			children[i]->update(dt);
 		}
+	}
+
+	// it is kind of ugly to do this here, but spheres given in the scene are of base class Entity
+	// ideally they should be of another derived class and move this to its update mehtod
+
+	// inside entity_list there are the line helpers
+	// the first two are related to dot product
+	// the next three are related to cross product
+	// the last two are related to quat
+
+	// iterate entity_list and save directions
+	std::vector<vec3> directions;
+	for (Entity* entity : Application::instance->entity_list) {
+		LineHelper* line_helper = dynamic_cast<LineHelper*>(entity);
+
+		if (!line_helper) continue;
+
+		directions.push_back(line_helper->mesh->vertices[1] - line_helper->mesh->vertices[0]); // line direction
+	}
+
+	if (name == "Dot Sphere") {
+		vec3 color_xyz(1.f); // we cannot get it from the material since it can be 0, will be always black
+
+		color_xyz = color_xyz * dot(directions[0], directions[1]);
+
+		// i am not able to debug. is related to the framework or faulty installation of vs 2022?
+		//std::cout << dot(directions[0], directions[1]) << std::endl;
+	
+		set_color(color_xyz);
 	}
 }
 
@@ -136,6 +165,13 @@ void Entity::set_children(std::vector<Entity*> entities)
 		entities[i]->parent = this;
 	}
 	children = entities;
+}
+
+void Entity::set_color(const vec3& color)
+{
+	material->color.x = color.x;
+	material->color.y = color.y;
+	material->color.z = color.z;
 }
 
 LineHelper::LineHelper(vec3 origin, vec3 end, const char* _name) : origin(origin), end(end), Entity(_name)
