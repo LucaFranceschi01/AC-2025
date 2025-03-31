@@ -85,9 +85,13 @@ void Entity::update(float dt)
 	else if (name == "Cross Sphere") {
 		model.forward = vec4(directions[3], 0.f); // "front" line helper
 		vec3 forward_xyz = vec3(model.forward.x, model.forward.y, model.forward.z);
-		model.right = vec4(cross(vec3(0.f, 1.f, 0.f), forward_xyz), 0.f);
+		vec3 r = cross(vec3(0.f, 1.f, 0.f), forward_xyz);
+		normalize(r);
+		model.right = vec4(r, 0.f);
 		vec3 right_xyz = vec3(model.right.x, model.right.y, model.right.z);
-		model.up = vec4(cross(forward_xyz, right_xyz), 0.f);
+		vec3 u = cross(forward_xyz, right_xyz);
+		normalize(u);
+		model.up = vec4(u, 0.f);
 	}
 }
 
