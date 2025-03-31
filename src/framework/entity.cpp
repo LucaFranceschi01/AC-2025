@@ -83,11 +83,15 @@ void Entity::update(float dt)
 		set_color(color_xyz);
 	}
 	else if (name == "Cross Sphere") {
-		model.forward = vec4(directions[3], 0.f); // "front" line helper
+		vec3 f(directions[3]); // "front" line helper
+		normalize(f); // just in case, should not be unnormalized anyways
+		model.forward = vec4(f, 0.f);
+
 		vec3 forward_xyz = vec3(model.forward.x, model.forward.y, model.forward.z);
 		vec3 r = cross(vec3(0.f, 1.f, 0.f), forward_xyz);
 		normalize(r);
 		model.right = vec4(r, 0.f);
+
 		vec3 right_xyz = vec3(model.right.x, model.right.y, model.right.z);
 		vec3 u = cross(forward_xyz, right_xyz);
 		normalize(u);
