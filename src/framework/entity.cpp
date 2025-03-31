@@ -79,11 +79,15 @@ void Entity::update(float dt)
 		vec3 color_xyz(1.f); // we cannot get it from the material since it can be 0, will be always black
 
 		color_xyz = color_xyz * dot(directions[0], directions[1]);
-
-		// i am not able to debug. is related to the framework or faulty installation of vs 2022?
-		//std::cout << dot(directions[0], directions[1]) << std::endl;
 	
 		set_color(color_xyz);
+	}
+	else if (name == "Cross Sphere") {
+		model.forward = vec4(directions[3], 0.f); // "front" line helper
+		vec3 forward_xyz = vec3(model.forward.x, model.forward.y, model.forward.z);
+		model.right = vec4(cross(vec3(0.f, 1.f, 0.f), forward_xyz), 0.f);
+		vec3 right_xyz = vec3(model.right.x, model.right.y, model.right.z);
+		model.up = vec4(cross(forward_xyz, right_xyz), 0.f);
 	}
 }
 

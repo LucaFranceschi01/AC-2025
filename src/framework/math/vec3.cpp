@@ -134,9 +134,11 @@ vec3 reflect(const vec3& a, const vec3& b)
 // Returns a vector that is perpendicular to both input vectors
 vec3 cross(const vec3& l, const vec3& r)
 {
-	return vec3(l.y * r.z - l.z * r.y,
+	vec3 cross(l.y * r.z - l.z * r.y,
 		l.z * r.x - l.x * r.z,
 		l.x * r.y - l.y * r.x);
+	normalize(cross);
+	return cross;
 }
 
 /*
