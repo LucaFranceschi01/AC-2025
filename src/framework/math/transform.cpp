@@ -45,7 +45,45 @@ Transform mat4_to_transform(const mat4& m)
 	// TODO
 	// ..
 
-	return Transform();
+	/* Tengo mis dudas sobre esta implementacion dado que la matriz de rotacion R tambien se le ha aplicado la transformacion de S, por lo que no termino de entender por que invertimos esto exactamente
+	// 1. Extract the translation
+	vec3 translation = vec3(m.tx, m.ty, m.tz);
+	// 2. Extract the rotation
+	mat4 rotationMatrix = mat4(
+		m.xx, m.xy, m.xz, 0,
+		m.yx, m.yy, m.yz, 0,
+		m.zx, m.zy, m.zz, 0,
+		0, 0, 0, 1
+	);
+	quat rotation = mat4_to_quat(rotationMatrix);
+	
+	mat4 inverseRotation = inverse(rotationMatrix);
+	mat4 scaleMatrix = m * inverseRotation;
+	// 3. Extract the scale
+	vec3 scale = vec3(scaleMatrix.xx, scaleMatrix.yy, scaleMatrix.zz);
+
+	return Transform(translation, rotation, scale);
+	*/
+
+	//source: https://math.stackexchange.com/questions/237369/given-this-transformation-matrix-how-do-i-decompose-it-into-translation-rotati
+	//observacion: la escala al estar computando los modulos de los vectores, nunca dara un valor negativo, por lo que solo se puede escalar a mas grande
+	vec3 translation = vec3(m.tx, m.ty, m.tz);
+	vec3 scale = vec3(
+		len(vec3(m.xx, m.xy, m.xz)),
+		len(vec3(m.yx, m.yy, m.yz)),
+		len(vec3(m.zx, m.zy, m.zz))
+	);
+
+	mat4 rotationMatrix = mat4(
+		m.xx / scale.x, m.xy / scale.x, m.xz / scale.x, 0,
+		m.yx / scale.y, m.yy / scale.y, m.yz / scale.y, 0,
+		m.zx / scale.z, m.zy / scale.z, m.zz / scale.z, 0,
+		0, 0, 0, 1
+	);
+	quat rotation = mat4_to_quat(rotationMatrix);
+
+	return Transform(translation, rotation, scale);
+	// return Transform();
 }
 
 // Converts a transform into a mat4
@@ -53,8 +91,17 @@ mat4 transform_to_mat4(const Transform& t)
 {
 	// TODO
 	// ..
+	mat4 m = mat4();
+	// Scale
+	m = scale(m, t.scale);
 
-	return mat4();
+	// Rotation
+	mat4 rotationMatrix = quat_to_mat4(t.rotation);
+	m = m * rotationMatrix;
+
+	// Translation
+	m = translate(m, t.position);
+	return m;
 }
 
 vec3 transform_point(const Transform& a, const vec3& b)

@@ -273,8 +273,17 @@ mat4 quat_to_mat4(const quat& q)
 {
 	// TODO
 	// ..
+	vec3 right = normalized(q * vec3(1, 0, 0));
+	vec3 up = normalized(q * vec3(0, 1, 0));
+	vec3 forward = normalized(q * vec3(0, 0, 1));
 
-	return mat4();
+	mat4 mat;
+	mat.right = vec4(right.x, right.y, right.z, 0);
+	mat.up = vec4(up.x, up.y, up.z, 0);
+	mat.forward = vec4(forward.x, forward.y, forward.z, 0);
+	mat.position = vec4(0, 0, 0, 1);
+
+	return mat;
 }
 
 quat mat4_to_quat(const mat4& m)
