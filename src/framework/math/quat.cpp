@@ -271,12 +271,36 @@ quat look_rotation(const vec3& direction, const vec3& up)
 
 mat4 quat_to_mat4(const quat& q)
 {
+	// FROM THE SLIDES I GET THIS
+	/*
 	mat4 m; // identity by default
 
 	// multiplication results in just taking the diagonal elements
 	m.r0c0 = q.x;
 	m.r1c1 = q.y;
 	m.r2c2 = q.z;
+
+	return m;
+	*/
+
+	// FROM THE INTERNET I GET THAT (works)
+	float xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
+	float xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
+	float wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
+	
+	mat4 m;
+
+	m.r0c0 = 1.f - 2.f * (yy + zz);
+	m.r0c1 = 2.f * (xy - wz);
+	m.r0c2 = 2.f * (xz + wy);
+
+	m.r1c0 = 2.f * (xy + wz);
+	m.r1c1 = 1.f - 2.f * (xx + zz);
+	m.r1c2 = 2.f * (yz - wx);
+
+	m.r2c0 = 2.f * (xz - wy);
+	m.r2c1 = 2.f * (yz + wx);
+	m.r2c2 = 1.f - 2.f * (xx + yy);
 
 	return m;
 }
