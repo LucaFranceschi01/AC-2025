@@ -271,10 +271,14 @@ quat look_rotation(const vec3& direction, const vec3& up)
 
 mat4 quat_to_mat4(const quat& q)
 {
-	// TODO
-	// ..
+	mat4 m; // identity by default
 
-	return mat4();
+	// multiplication results in just taking the diagonal elements
+	m.r0c0 = q.x;
+	m.r1c1 = q.y;
+	m.r2c2 = q.z;
+
+	return m;
 }
 
 quat mat4_to_quat(const mat4& m)
