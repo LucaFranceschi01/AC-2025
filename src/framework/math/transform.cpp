@@ -1,8 +1,6 @@
 #include "transform.h"
 #include <math.h>
 
-#include <cassert>
-
 // Transforms can be combined in the same way as matrices and quaternions and the effects of two transforms can be combined into one transform
 // To keep things consistent, combining transforms should maintain a right-to-left combination order
 Transform combine(const Transform& t1, const Transform& t2)
@@ -60,10 +58,6 @@ Transform mat4_to_transform(const mat4& m)
 
 	mat4 scale = m * inv_rot;
 	
-	// ensure correct form of scale matrix
-	assert(scale.r3c3 != 0.f);
-	scale = scale * (1 / scale.r3c3); // rescale s.t. (scale.w = 1)
-
 	t.scale.x = scale.r0c0;
 	t.scale.y = scale.r1c1;
 	t.scale.z = scale.r1c1;
@@ -81,7 +75,7 @@ mat4 transform_to_mat4(const Transform& t)
 	m.r1c1 = t.scale.y;
 	m.r2c2 = t.scale.z;
 
-	m = m * quat_to_mat4(t.rotation); // ROTATIONS ARE 0 THEN ALL IS 0
+	m = m * quat_to_mat4(t.rotation);
 	
 	m.r0c3 = t.position.x;
 	m.r1c3 = t.position.y;
