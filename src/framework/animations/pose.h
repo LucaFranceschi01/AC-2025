@@ -7,8 +7,10 @@
 class Pose
 {
 protected:
-	std::vector<Transform> joints; // local transforms
-	std::vector<int> parents; // parent joints Id (index in the joints array)
+	// local transforms (relative to its parent)
+	std::vector<Transform> joints;
+	// parent joints Id (index in the joints array)
+	std::vector<int> parents;
 
 public:
 	Pose(); // Empty constructor

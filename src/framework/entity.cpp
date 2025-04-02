@@ -324,8 +324,9 @@ void SkeletonHelper::update(float dt)
 	if (pose) {
 		mesh->clear();
 
-		// ..
-
+		// TODO: TASK1 Set the vertices of the mesh (lines between joints) using the global positions of the pose.
+		
+		//...
 		mesh->upload_to_vram();
 	}
 }
@@ -411,6 +412,9 @@ void SkinnedEntity::render(Camera* camera)
 				uniforms.model = model * parent->get_model();
 			}
 			
+			//TODO: TASK5 If it has an skeleton, compute the skin matrices and set the array into the uniform structure (to send it to the GPU).
+			
+			//...
 			material->render(mesh, uniforms);
 		}
 
@@ -440,11 +444,9 @@ void SkinnedEntity::update(float dt)
 			current_pose = skeleton->get_bind_pose();
 		}
 
-		// CPU Skinning
+		// TODO: TASK4 Compute CPU Skinning
 		// ..
 
-		// GPU Skinning
-		// ..
 	}
 	if (skeleton_helper) {
 		skeleton_helper->update(dt);
@@ -482,6 +484,17 @@ void SkinnedEntity::render_gui()
 void SkinnedEntity::set_skeleton(const Pose& rest, const Pose& bind, const std::vector<std::string>& names)
 {
 	skeleton = new Skeleton(rest, bind, names);
+	skeleton_helper = new SkeletonHelper(*skeleton, (name + "_helper").c_str());
+	skeleton_helper->parent = this;
+
+	for (unsigned int i = 0; i < children.size(); i++) {
+		children[i]->as<SkinnedEntity>()->skeleton = skeleton;
+	}
+}
+
+void SkinnedEntity::set_skeleton(Skeleton* skeleton)
+{
+	this->skeleton = skeleton;
 	skeleton_helper = new SkeletonHelper(*skeleton, (name + "_helper").c_str());
 	skeleton_helper->parent = this;
 

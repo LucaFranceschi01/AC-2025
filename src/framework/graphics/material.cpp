@@ -22,8 +22,8 @@ void FlatMaterial::set_uniforms(Uniforms& uniforms)
 	shader->set_uniform("u_viewprojection", uniforms.camera->viewprojection_matrix);
 	shader->set_uniform("u_camera_position", uniforms.camera->eye);
 	shader->set_uniform("u_model", uniforms.model);
-	if (uniforms.animated_matrices.size()) {
-		shader->set_uniform("u_animated", uniforms.animated_matrices);
+	if (uniforms.skin_matrices.size()) {
+		shader->set_uniform("u_skin_matrices", uniforms.skin_matrices);
 	}
 	shader->set_uniform("u_color", color);
 }
@@ -71,8 +71,8 @@ void PBRMaterial::set_uniforms(Uniforms& uniforms)
 	shader->set_uniform("u_camera_position", uniforms.camera->eye);
 	shader->set_uniform("u_model", uniforms.model);
 
-	if (uniforms.animated_matrices.size()) {
-		shader->set_uniform("u_animated", uniforms.animated_matrices);
+	if (uniforms.skin_matrices.size()) {
+		shader->set_uniform("u_skin_matrices", uniforms.skin_matrices);
 	}
 
 	if (albedo_tex) shader->set_uniform("u_texture", albedo_tex, 0);

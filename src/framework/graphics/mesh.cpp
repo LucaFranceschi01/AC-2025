@@ -108,7 +108,15 @@ void Mesh::clear()
 
 void Mesh::cpu_skinning(Skeleton* skeleton, Pose pose)
 {
+	//TODO: TASK 4 Compute the skinned animated vertices and normals
+	std::vector<vec3> skinned_vertices(vertices.size());
+	std::vector<vec3> skinned_normals(vertices.size());
+
 	// ..
+
+	// upload the skinned vertices and normals to the GPU (don't overwrite the vertices and the normals of the mesh)
+	upload_attributes_to_vram(skinned_vertices, vertices_vbo_id);
+	upload_attributes_to_vram(skinned_normals, normals_vbo_id);
 }
 
 int vertex_location = -1;
@@ -508,25 +516,6 @@ void Mesh::render_fixed_pipeline(int primitive)
 		glDisableClientState(GL_COLOR_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, 0); //if it crashes, comment this line
 }
-
-// TODO
-//void Mesh::render_animated(unsigned int primitive, Skeleton* skeleton)
-//{
-//	if (skeleton)
-//	{
-//		Shader* shader = Shader::current;
-//		std::vector<Matrix44> bone_matrices;
-//		assert(bones.size());
-//		int bones_loc = shader->get_uniform_location("u_bones");
-//		if (bones_loc != -1)
-//		{
-//			skeleton->computeFinalBoneMatrices(bone_matrices, this);
-//			shader->set_uniform("u_bones", bone_matrices);
-//		}
-//	}
-//
-//	render(primitive);
-//}
 
 void Mesh::upload_to_vram()
 {

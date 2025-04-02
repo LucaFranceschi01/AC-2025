@@ -116,4 +116,5 @@ public:
 	void render_gui();
 
 	void set_skeleton(const Pose& rest, const Pose& bind, const std::vector<std::string>& names);
+	void set_skeleton(Skeleton* skeleton);
 };

@@ -11,7 +11,7 @@
 struct Uniforms {
 	mat4 model;
 	Camera* camera = nullptr;
-	std::vector<mat4> animated_matrices;
+	std::vector<mat4> skin_matrices;
 };
 
 class Material {
