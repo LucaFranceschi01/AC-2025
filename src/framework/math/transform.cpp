@@ -38,69 +38,49 @@ Transform mix(const Transform& a, const Transform& b, float t)
 		lerp(a.scale, b.scale, t));
 }
 
-// Extract the rotation and the translition from a matrix is easy. But not for the scale
+// Extract the rotation and the translation from a matrix is easy. But not for the scale
 // M = SRT, ignore the translation: M = SR -> invert R to isolate S
 Transform mat4_to_transform(const mat4& m)
 {
-	// TODO
-	// ..
+	Transform t;
 
-	/* Tengo mis dudas sobre esta implementacion dado que la matriz de rotacion R tambien se le ha aplicado la transformacion de S, por lo que no termino de entender por que invertimos esto exactamente
-	// 1. Extract the translation
-	vec3 translation = vec3(m.tx, m.ty, m.tz);
-	// 2. Extract the rotation
-	mat4 rotationMatrix = mat4(
-		m.xx, m.xy, m.xz, 0,
-		m.yx, m.yy, m.yz, 0,
-		m.zx, m.zy, m.zz, 0,
-		0, 0, 0, 1
-	);
-	quat rotation = mat4_to_quat(rotationMatrix);
+	// set the translation
+	t.position.x = m.r0c3;
+	t.position.y = m.r1c3;
+	t.position.z = m.r2c3;
+
+	// set the rotation directly
+	t.rotation = mat4_to_quat(m);
+
+	// set the scale
+	mat4 inv_rot = quat_to_mat4(t.rotation);
+	invert(inv_rot);
+
+	mat4 scale = m * inv_rot;
 	
-	mat4 inverseRotation = inverse(rotationMatrix);
-	mat4 scaleMatrix = m * inverseRotation;
-	// 3. Extract the scale
-	vec3 scale = vec3(scaleMatrix.xx, scaleMatrix.yy, scaleMatrix.zz);
+	t.scale.x = scale.r0c0;
+	t.scale.y = scale.r1c1;
+	t.scale.z = scale.r1c1;
 
-	return Transform(translation, rotation, scale);
-	*/
-
-	//source: https://math.stackexchange.com/questions/237369/given-this-transformation-matrix-how-do-i-decompose-it-into-translation-rotati
-	//observacion: la escala al estar computando los modulos de los vectores, nunca dara un valor negativo, por lo que solo se puede escalar a mas grande
-	vec3 translation = vec3(m.tx, m.ty, m.tz);
-	vec3 scale = vec3(
-		len(vec3(m.xx, m.xy, m.xz)),
-		len(vec3(m.yx, m.yy, m.yz)),
-		len(vec3(m.zx, m.zy, m.zz))
-	);
-
-	mat4 rotationMatrix = mat4(
-		m.xx / scale.x, m.xy / scale.x, m.xz / scale.x, 0,
-		m.yx / scale.y, m.yy / scale.y, m.yz / scale.y, 0,
-		m.zx / scale.z, m.zy / scale.z, m.zz / scale.z, 0,
-		0, 0, 0, 1
-	);
-	quat rotation = mat4_to_quat(rotationMatrix);
-
-	return Transform(translation, rotation, scale);
-	// return Transform();
+	return Transform();
 }
 
 // Converts a transform into a mat4
 mat4 transform_to_mat4(const Transform& t)
 {
-	// TODO
-	// ..
-	mat4 m = mat4();
-	// Scale
-	m = scale(m, t.scale);
+	// set scale manually
+	// would be the same if using a quad but it is technically not a quad
+	mat4 m;
+	m.r0c0 = t.scale.x;
+	m.r1c1 = t.scale.y;
+	m.r2c2 = t.scale.z;
 
-	// Rotation
-	mat4 rotationMatrix = quat_to_mat4(t.rotation);
-	m = m * rotationMatrix;
-
-	// Translation
-	m = translate(m, t.position);
+	m = m * quat_to_mat4(t.rotation);
+	
+	m.r0c3 = t.position.x;
+	m.r1c3 = t.position.y;
+	m.r2c3 = t.position.z;
+	
 	return m;
 }
 

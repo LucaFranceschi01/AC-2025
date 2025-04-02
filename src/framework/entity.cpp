@@ -56,47 +56,6 @@ void Entity::update(float dt)
 			children[i]->update(dt);
 		}
 	}
-
-	// it is kind of ugly to do this here, but spheres given in the scene are of base class Entity
-	// ideally they should be of another derived class and move this to its update mehtod
-
-	// inside entity_list there are the line helpers
-	// the first two are related to dot product
-	// the next three are related to cross product
-	// the last two are related to quat
-
-	// iterate entity_list and save directions
-	std::vector<vec3> directions;
-	for (Entity* entity : Application::instance->entity_list) {
-		LineHelper* line_helper = dynamic_cast<LineHelper*>(entity);
-
-		if (!line_helper) continue;
-
-		directions.push_back(line_helper->mesh->vertices[1] - line_helper->mesh->vertices[0]); // line direction
-	}
-
-	if (name == "Dot Sphere") {
-		vec3 color_xyz(1.f); // we cannot get it from the material since it can be 0, will be always black
-
-		color_xyz = color_xyz * dot(directions[0], directions[1]);
-	
-		set_color(color_xyz);
-	}
-	else if (name == "Cross Sphere") {
-		vec3 f(directions[3]); // "front" line helper
-		normalize(f); // just in case, should not be unnormalized anyways
-		model.forward = vec4(f, 0.f);
-
-		vec3 forward_xyz = vec3(model.forward.x, model.forward.y, model.forward.z);
-		vec3 r = cross(vec3(0.f, 1.f, 0.f), forward_xyz);
-		normalize(r);
-		model.right = vec4(r, 0.f);
-
-		vec3 right_xyz = vec3(model.right.x, model.right.y, model.right.z);
-		vec3 u = cross(forward_xyz, right_xyz);
-		normalize(u);
-		model.up = vec4(u, 0.f);
-	}
 }
 
 void Entity::render_gui()
