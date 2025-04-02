@@ -62,7 +62,7 @@ Transform mat4_to_transform(const mat4& m)
 	t.scale.y = scale.r1c1;
 	t.scale.z = scale.r1c1;
 
-	return Transform();
+	return t;
 }
 
 // Converts a transform into a mat4
