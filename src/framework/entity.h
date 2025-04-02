@@ -54,6 +54,7 @@ public:
 	void set_children(std::vector<Entity*> children);
 
 	void set_color(const vec3& color);
+	void set_position(const vec3& pos);
 
 	// follows the front and rearranges the rest of the vectors in the model
 	// known bugs: overwrites information about scale / rotation

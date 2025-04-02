@@ -11,6 +11,10 @@ Application* Application::instance;
 // does not really matter
 quat quat_task_quat;
 
+vec3 lerp_task_p1(3.f, 0.f, 0.f);
+vec3 lerp_task_p2(3.f, 1.f, 0.f);
+float lerp_task_factor = 0.f;
+
 void Application::init(GLFWwindow* window)
 {
     instance = this;
@@ -55,7 +59,7 @@ void Application::init(GLFWwindow* window)
     Entity* lerp_ent = new Entity("Lerp Sphere");
     lerp_ent->mesh = Mesh::get("res/meshes/sphere.obj");
     lerp_ent->material = new FlatMaterial();
-    lerp_ent->set_transform(Transform(vec3(3.f, 0.f, 0.f), quat(), vec3(1.f)));
+    lerp_ent->set_transform(Transform(lerp_task_p1, quat(), vec3(1.f)));
     entity_list.push_back(lerp_ent);
 
     // Then, add debug lines (so they are rendered on top of the previous entities)
@@ -150,6 +154,10 @@ void Application::update(float dt)
         // this does not work because "origin" and "end" are always fixed, they do not change according to the transform
         //entity_list[2]->follow_front(entity_list[10]->as<LineHelper>()->end);
     }
+
+    { // LERP TASK
+        entity_list[3]->set_position(lerp(lerp_task_p1, lerp_task_p2, lerp_task_factor));
+    }
 }
 
 void Application::render()
@@ -193,7 +201,14 @@ void Application::render_gui()
         }
         
         if (ImGui::TreeNode("Quat task")) {
-            ImGui::DragFloat4("Quaternion", quat_task_quat.v, 0.1);
+            ImGui::DragFloat4("Quaternion", quat_task_quat.v, 0.1f);
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNode("Lerp task")) {
+            ImGui::DragFloat3("Position A", lerp_task_p1.v, 0.1f);
+            ImGui::DragFloat3("Position B", lerp_task_p2.v, 0.1f);
+            ImGui::DragFloat("Interpolation factor", &lerp_task_factor, 0.01f, 0.f, 1.f);
             ImGui::TreePop();
         }
 
