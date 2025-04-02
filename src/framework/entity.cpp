@@ -152,6 +152,13 @@ void Entity::set_position(const vec3& pos)
 	set_transform(t);
 }
 
+void Entity::set_rotation(const quat& q)
+{
+	Transform t = get_transform();
+	t.rotation = q;
+	set_transform(t);
+}
+
 void Entity::follow_front(const vec3 & front)
 {
 	vec3 f = front;
