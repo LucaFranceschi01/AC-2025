@@ -145,6 +145,13 @@ void Entity::set_color(const vec3& color)
 	material->color.z = color.z;
 }
 
+void Entity::set_position(const vec3& pos)
+{
+	Transform t = get_transform();
+	t.position = pos;
+	set_transform(t);
+}
+
 void Entity::follow_front(const vec3 & front)
 {
 	vec3 f = front;
