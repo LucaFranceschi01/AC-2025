@@ -8,6 +8,13 @@
 Camera* Application::camera = nullptr;
 Application* Application::instance;
 
+// does not really matter
+quat quat_task_quat;
+
+vec3 lerp_task_p1(3.f, 0.f, 0.f);
+vec3 lerp_task_p2(3.f, 1.f, 0.f);
+float lerp_task_factor = 0.f;
+
 void Application::init(GLFWwindow* window)
 {
     instance = this;
@@ -52,7 +59,7 @@ void Application::init(GLFWwindow* window)
     Entity* lerp_ent = new Entity("Lerp Sphere");
     lerp_ent->mesh = Mesh::get("res/meshes/sphere.obj");
     lerp_ent->material = new FlatMaterial();
-    lerp_ent->set_transform(Transform(vec3(3.f, 0.f, 0.f), quat(), vec3(1.f)));
+    lerp_ent->set_transform(Transform(lerp_task_p1, quat(), vec3(1.f)));
     entity_list.push_back(lerp_ent);
 
     // Then, add debug lines (so they are rendered on top of the previous entities)
@@ -82,7 +89,10 @@ void Application::init(GLFWwindow* window)
     quat_l6->unlocked = false;
     entity_list.push_back(quat_l6);
 
-    LineHelper* quat_l7 = new LineHelper(vec3(1.f, 0.f, 0.f), vec3(0.f, 0.f, 1.f));
+    LineHelper* quat_l7 = new LineHelper(vec3(0.f), vec3(0.f, 0.f, 1.f));
+    // note that this line helper has its origin in 0.0.0 but it transformed
+    // done so that the quat rotations are not weird
+    quat_l7->set_transform(Transform(vec3(1.f, 0.f, 0.f), quat(), vec3(1.f)));
     entity_list.push_back(quat_l7);
 }
 
@@ -129,23 +139,24 @@ void Application::update(float dt)
     }
     
     { // CROSS PRODUCT TASK
-        vec3 f(directions[3]); // "front" line helper
-        mat4 model = entity_list[1]->get_model(); // hardcoded entity[1] is Cross Product sphere
+        entity_list[1]->follow_front(directions[3]); // hardcoded entity[1] is Cross Product sphere
+    }
 
-        normalize(f); // just in case, should not be unnormalized anyways
-        model.forward = vec4(f, 0.f);
+    { // QUAT TASK
+        // we change the rotation according to quat_task_quat (awesome name)
+        Transform t = entity_list[10]->get_transform(); // entity[10] is last LineHelper
+        t.rotation = quat_task_quat;
+        entity_list[10]->set_transform(t);
 
-        vec3 forward_xyz = vec3(model.forward.x, model.forward.y, model.forward.z);
-        vec3 r = cross(vec3(0.f, 1.f, 0.f), forward_xyz);
-        normalize(r);
-        model.right = vec4(r, 0.f);
+        // which can be seen in the sphere as
+        entity_list[2]->follow_front(transform_vector(t, directions[6])); // entity[2] is Quat sphere
 
-        vec3 right_xyz = vec3(model.right.x, model.right.y, model.right.z);
-        vec3 u = cross(forward_xyz, right_xyz);
-        normalize(u);
-        model.up = vec4(u, 0.f);
+        // this does not work because "origin" and "end" are always fixed, they do not change according to the transform
+        //entity_list[2]->follow_front(entity_list[10]->as<LineHelper>()->end);
+    }
 
-        entity_list[1]->set_model(model);
+    { // LERP TASK
+        entity_list[3]->set_position(lerp(lerp_task_p1, lerp_task_p2, lerp_task_factor));
     }
 }
 
@@ -188,8 +199,21 @@ void Application::render_gui()
                 ImGui::TreePop();
             }
         }
+        
+        if (ImGui::TreeNode("Quat task")) {
+            ImGui::DragFloat4("Quaternion", quat_task_quat.v, 0.1f);
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNode("Lerp task")) {
+            ImGui::DragFloat3("Position A", lerp_task_p1.v, 0.1f);
+            ImGui::DragFloat3("Position B", lerp_task_p2.v, 0.1f);
+            ImGui::DragFloat("Interpolation factor", &lerp_task_factor, 0.01f, 0.f, 1.f);
+            ImGui::TreePop();
+        }
 
         ImGui::TreePop();
+
     }
 }
 

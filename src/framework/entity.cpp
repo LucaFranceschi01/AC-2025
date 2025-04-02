@@ -145,6 +145,37 @@ void Entity::set_color(const vec3& color)
 	material->color.z = color.z;
 }
 
+void Entity::set_position(const vec3& pos)
+{
+	Transform t = get_transform();
+	t.position = pos;
+	set_transform(t);
+}
+
+void Entity::set_rotation(const quat& q)
+{
+	Transform t = get_transform();
+	t.rotation = q;
+	set_transform(t);
+}
+
+void Entity::follow_front(const vec3 & front)
+{
+	vec3 f = front;
+	normalize(f); // just in case, should not be unnormalized anyways
+	model.forward = vec4(f, 0.f);
+
+	vec3 forward_xyz = vec3(model.forward.x, model.forward.y, model.forward.z);
+	vec3 r = cross(vec3(0.f, 1.f, 0.f), forward_xyz);
+	normalize(r);
+	model.right = vec4(r, 0.f);
+
+	vec3 right_xyz = vec3(model.right.x, model.right.y, model.right.z);
+	vec3 u = cross(forward_xyz, right_xyz);
+	normalize(u);
+	model.up = vec4(u, 0.f);
+}
+
 LineHelper::LineHelper(vec3 origin, vec3 end, const char* _name) : origin(origin), end(end), Entity(_name)
 {
 	if (!(_name && *_name)) { name = "LineHelper_" + std::to_string(name_id_counter); }
