@@ -1,8 +1,6 @@
 #include "vec4.h"
 #include <math.h>
 
-#include <cassert>
-
 // Basic operations
 vec4 operator+(const vec4& l, const vec4& r)
 {
