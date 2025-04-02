@@ -38,23 +38,50 @@ Transform mix(const Transform& a, const Transform& b, float t)
 		lerp(a.scale, b.scale, t));
 }
 
-// Extract the rotation and the translition from a matrix is easy. But not for the scale
+// Extract the rotation and the translation from a matrix is easy. But not for the scale
 // M = SRT, ignore the translation: M = SR -> invert R to isolate S
 Transform mat4_to_transform(const mat4& m)
 {
-	// TODO
-	// ..
+	Transform t;
 
-	return Transform();
+	// set the translation
+	t.position.x = m.r0c3;
+	t.position.y = m.r1c3;
+	t.position.z = m.r2c3;
+
+	// set the rotation directly
+	t.rotation = mat4_to_quat(m);
+
+	// set the scale
+	mat4 inv_rot = quat_to_mat4(t.rotation);
+	invert(inv_rot);
+
+	mat4 scale = m * inv_rot;
+	
+	t.scale.x = scale.r0c0;
+	t.scale.y = scale.r1c1;
+	t.scale.z = scale.r1c1;
+
+	return t;
 }
 
 // Converts a transform into a mat4
 mat4 transform_to_mat4(const Transform& t)
 {
-	// TODO
-	// ..
+	// set scale manually
+	// would be the same if using a quad but it is technically not a quad
+	mat4 m;
+	m.r0c0 = t.scale.x;
+	m.r1c1 = t.scale.y;
+	m.r2c2 = t.scale.z;
 
-	return mat4();
+	m = m * quat_to_mat4(t.rotation);
+	
+	m.r0c3 = t.position.x;
+	m.r1c3 = t.position.y;
+	m.r2c3 = t.position.z;
+	
+	return m;
 }
 
 vec3 transform_point(const Transform& a, const vec3& b)

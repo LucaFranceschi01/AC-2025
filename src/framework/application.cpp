@@ -104,6 +104,49 @@ void Application::update(float dt)
         camera->move(vec2(delta.x * dt, -delta.y * dt));
     }
     last_mouse_position = mouse_position;
+
+    // inside entity_list there are the line helpers
+    // the first two are related to dot product
+    // the next three are related to cross product
+    // the last two are related to quat
+
+    // iterate entity_list and save directions
+    std::vector<vec3> directions;
+    for (Entity* entity : entity_list) {
+        LineHelper* line_helper = entity->as<LineHelper>();
+
+        if (!line_helper) continue;
+
+        directions.push_back(line_helper->end); // line direction relative to its origin
+    }
+
+    { // DOT PRODUCT TASK 
+        vec3 color_xyz(1.f); // we cannot get it from the material since it can be 0, will be always black
+
+        color_xyz = color_xyz * dot(directions[0], directions[1]);
+
+        entity_list[0]->set_color(color_xyz); // hardcoded entity[0] is Dot Product sphere
+    }
+    
+    { // CROSS PRODUCT TASK
+        vec3 f(directions[3]); // "front" line helper
+        mat4 model = entity_list[1]->get_model(); // hardcoded entity[1] is Cross Product sphere
+
+        normalize(f); // just in case, should not be unnormalized anyways
+        model.forward = vec4(f, 0.f);
+
+        vec3 forward_xyz = vec3(model.forward.x, model.forward.y, model.forward.z);
+        vec3 r = cross(vec3(0.f, 1.f, 0.f), forward_xyz);
+        normalize(r);
+        model.right = vec4(r, 0.f);
+
+        vec3 right_xyz = vec3(model.right.x, model.right.y, model.right.z);
+        vec3 u = cross(forward_xyz, right_xyz);
+        normalize(u);
+        model.up = vec4(u, 0.f);
+
+        entity_list[1]->set_model(model);
+    }
 }
 
 void Application::render()
